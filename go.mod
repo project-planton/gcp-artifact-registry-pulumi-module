@@ -3,10 +3,10 @@ module github.com/plantoncloud-inc/artifact-store-pulumi-blueprint
 go 1.20
 
 require (
-	buf.build/gen/go/plantoncloud/planton-cloud-apis/protocolbuffers/go v1.31.0-20230926040443-9fe796e4a2ed.1
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.404
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.1
+	github.com/plantoncloud-inc/go-commons v0.0.405
+	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.3
+	github.com/plantoncloud/planton-cloud-apis v0.0.0-20231015045713-05dcdbfec3c0
 	github.com/pulumi/pulumi-gcp/sdk/v6 v6.67.0
 	github.com/pulumi/pulumi/sdk/v3 v3.86.0
 )
