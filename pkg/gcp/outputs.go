@@ -1,9 +1,6 @@
 package gcp
 
 import (
-	artifactstoregcp "buf.build/gen/go/plantoncloud/planton-cloud-apis/protocolbuffers/go/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
-	artifactstorestate "buf.build/gen/go/plantoncloud/planton-cloud-apis/protocolbuffers/go/cloud/planton/apis/v1/code2cloud/develop/artifactstore/state"
-	"buf.build/gen/go/plantoncloud/planton-cloud-apis/protocolbuffers/go/cloud/planton/apis/v1/stack/rpc/enums"
 	"context"
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/docker"
@@ -13,6 +10,9 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/org"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
+	artifactstoregcp "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
+	artifactstorestate "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/state"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/rpc/enums"
 )
 
 func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackInput) (*artifactstoregcp.ArtifactStoreGcpStackOutputs, error) {

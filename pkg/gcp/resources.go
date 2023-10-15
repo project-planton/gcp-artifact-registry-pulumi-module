@@ -1,11 +1,11 @@
 package gcp
 
 import (
-	"buf.build/gen/go/plantoncloud/planton-cloud-apis/protocolbuffers/go/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	pulumigcpprovider "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/automation/provider/google"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
