@@ -4,14 +4,15 @@ go 1.20
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.405
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.3
-	github.com/plantoncloud/planton-cloud-apis v0.0.0-20231015045713-05dcdbfec3c0
+	github.com/plantoncloud-inc/go-commons v0.0.407
+	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.5
+	github.com/plantoncloud/planton-cloud-apis v0.0.8
 	github.com/pulumi/pulumi-gcp/sdk/v6 v6.67.0
 	github.com/pulumi/pulumi/sdk/v3 v3.86.0
 )
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20231017183020-0de7443d03cf.1 // indirect
 	cloud.google.com/go v0.110.4 // indirect
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
