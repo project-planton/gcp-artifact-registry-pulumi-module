@@ -10,9 +10,9 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/org"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
+	artifactstorestate "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore"
 	artifactstoregcp "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
-	artifactstorestate "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/state"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/rpc/enums"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/enums"
 )
 
 func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackInput) (*artifactstoregcp.ArtifactStoreGcpStackOutputs, error) {
@@ -37,7 +37,7 @@ func Get(stackOutput map[string]interface{}, input *artifactstoregcp.ArtifactSto
 	npmRepoName := npm.GetRepoName(artifactStoreId)
 	pythonRepoName := python.GetRepoName(artifactStoreId)
 	return &artifactstoregcp.ArtifactStoreGcpStackOutputs{
-		GcpArtifactRegistryStatus: &artifactstorestate.ArtifactStoreGcpArtifactRegistryStatusState{
+		GcpArtifactRegistryStatus: &artifactstorestate.ArtifactStoreGcpArtifactRegistryStatus{
 			ReaderServiceAccountEmail:     backend.GetVal(stackOutput, serviceaccount.GetReaderServiceAccountEmailOutputName(artifactStoreId)),
 			ReaderServiceAccountKeyBase64: backend.GetVal(stackOutput, serviceaccount.GetReaderServiceAccountKeyOutputName(artifactStoreId)),
 			WriterServiceAccountEmail:     backend.GetVal(stackOutput, serviceaccount.GetWriterServiceAccountEmailOutputName(artifactStoreId)),
