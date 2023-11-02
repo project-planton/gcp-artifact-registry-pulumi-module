@@ -1,12 +1,14 @@
 module github.com/plantoncloud-inc/artifact-store-pulumi-blueprint
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.407
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.5
-	github.com/plantoncloud/planton-cloud-apis v0.0.8
+	github.com/plantoncloud-inc/go-commons v0.0.412
+	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.8
+	github.com/plantoncloud/planton-cloud-apis v0.0.14
 	github.com/pulumi/pulumi-gcp/sdk/v6 v6.67.0
 	github.com/pulumi/pulumi/sdk/v3 v3.86.0
 )
