@@ -6,7 +6,7 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
 	puluminameoutputgcp "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/enums"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/provider/gcpartifactregistry/enums/repotype"
 	wordpb "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/commons/english/enums"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/artifactregistry"
@@ -30,7 +30,7 @@ func Resources(ctx *pulumi.Context, input *Input) error {
 			Project:      pulumi.String(input.GcpProjectId),
 			Location:     pulumi.String(input.GcpRegion),
 			RepositoryId: pulumi.String(repoName),
-			Format:       pulumi.String(enums.GcpArtifactRegistryRepoType_PYTHON.String()),
+			Format:       pulumi.String(repotype.GcpArtifactRegistryRepoType_PYTHON.String()),
 			Labels:       pulumi.ToStringMap(input.Labels),
 		}, pulumi.Provider(input.GcpProvider))
 	if err != nil {
@@ -82,7 +82,7 @@ func Resources(ctx *pulumi.Context, input *Input) error {
 
 func GetPythonRepoNameOutputName(artifactStoreId string) string {
 	return puluminameoutputgcp.Name(artifactregistry.Repository{}, artifactStoreId,
-		enums.GcpArtifactRegistryRepoType_PYTHON.String(), wordpb.Word_name.String())
+		repotype.GcpArtifactRegistryRepoType_PYTHON.String(), wordpb.Word_name.String())
 }
 
 func exportOutputs(ctx *pulumi.Context, repoName string, pythonRepo *artifactregistry.Repository) {

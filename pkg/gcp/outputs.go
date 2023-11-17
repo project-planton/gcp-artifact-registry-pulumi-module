@@ -2,6 +2,8 @@ package gcp
 
 import (
 	"context"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/job/enums/operationtype"
+
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/docker"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/maven"
@@ -12,7 +14,6 @@ import (
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
 	artifactstorestate "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore"
 	artifactstoregcp "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/enums"
 )
 
 func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackInput) (*artifactstoregcp.ArtifactStoreGcpStackOutputs, error) {
@@ -28,7 +29,7 @@ func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackI
 }
 
 func Get(stackOutput map[string]interface{}, input *artifactstoregcp.ArtifactStoreGcpStackInput) *artifactstoregcp.ArtifactStoreGcpStackOutputs {
-	if input.StackJob.OperationType != enums.StackOperationType_apply || stackOutput == nil {
+	if input.StackJob.OperationType != operationtype.StackJobOperationType_apply || stackOutput == nil {
 		return &artifactstoregcp.ArtifactStoreGcpStackOutputs{}
 	}
 	artifactStoreId := input.ResourceInput.ArtifactStore.Metadata.Id
