@@ -6,15 +6,15 @@ toolchain go1.21.3
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.413
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.10
-	github.com/plantoncloud/planton-cloud-apis v0.0.28
+	github.com/plantoncloud-inc/go-commons v0.0.414
+	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.11
+	github.com/plantoncloud/planton-cloud-apis v0.0.35
 	github.com/pulumi/pulumi-gcp/sdk/v6 v6.67.0
 	github.com/pulumi/pulumi/sdk/v3 v3.92.0
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20231017183020-0de7443d03cf.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20231115204500-e097f827e652.2 // indirect
 	cloud.google.com/go v0.110.4 // indirect
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect

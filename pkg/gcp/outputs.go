@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/job/enums/operationtype"
 
 	"github.com/pkg/errors"
@@ -29,7 +30,7 @@ func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackI
 }
 
 func Get(stackOutput map[string]interface{}, input *artifactstoregcp.ArtifactStoreGcpStackInput) *artifactstoregcp.ArtifactStoreGcpStackOutputs {
-	if input.StackJob.OperationType != operationtype.StackJobOperationType_apply || stackOutput == nil {
+	if input.StackJob.Spec.OperationType != operationtype.StackJobOperationType_apply || stackOutput == nil {
 		return &artifactstoregcp.ArtifactStoreGcpStackOutputs{}
 	}
 	artifactStoreId := input.ResourceInput.ArtifactStore.Metadata.Id
