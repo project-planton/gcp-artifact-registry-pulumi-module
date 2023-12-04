@@ -7,7 +7,7 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/npm"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/python"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
-	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp"
+	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

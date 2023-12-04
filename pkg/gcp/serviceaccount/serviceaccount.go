@@ -2,12 +2,13 @@ package serviceaccount
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 	commonsgcpiamsa "github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/serviceaccount"
 	puluminameoutputgcp "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
 	wordpb "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/commons/english/enums"
-	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp"
-	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/serviceaccount"
+	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
+	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

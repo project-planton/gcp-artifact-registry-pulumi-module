@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam"
@@ -9,8 +10,8 @@ import (
 	puluminameoutputgcp "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/provider/gcpartifactregistry/enums/repotype"
 	wordpb "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/commons/english/enums"
-	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp"
-	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/artifactregistry"
+	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
+	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
