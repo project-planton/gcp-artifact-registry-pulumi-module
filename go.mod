@@ -9,8 +9,8 @@ go 1.21
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/plantoncloud-inc/go-commons v0.0.421
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.27
-	github.com/plantoncloud/planton-cloud-apis v0.0.85
+	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.29
+	github.com/plantoncloud/planton-cloud-apis v0.0.87
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.2.1
 	github.com/pulumi/pulumi/sdk/v3 v3.104.2
 )
