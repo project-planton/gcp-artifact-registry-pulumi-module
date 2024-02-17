@@ -5,12 +5,12 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	pulumigcpprovider "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/automation/provider/google"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
+	code2cloudv1developafsstackgcpmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp/model"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 type ResourceStack struct {
-	Input     *gcp.ArtifactStoreGcpStackInput
+	Input     *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput
 	GcpLabels map[string]string
 }
 

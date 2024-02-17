@@ -13,11 +13,11 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/org"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
-	artifactstorestate "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore"
-	artifactstoregcp "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp"
+	code2cloudv1developafsmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/model"
+	code2cloudv1developafsstackgcpmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp/model"
 )
 
-func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackInput) (*artifactstoregcp.ArtifactStoreGcpStackOutputs, error) {
+func Outputs(ctx context.Context, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) (*code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs, error) {
 	pulumiOrgName, err := org.GetOrgName()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get pulumi org name")
@@ -29,17 +29,17 @@ func Outputs(ctx context.Context, input *artifactstoregcp.ArtifactStoreGcpStackI
 	return Get(stackOutput, input), nil
 }
 
-func Get(stackOutput map[string]interface{}, input *artifactstoregcp.ArtifactStoreGcpStackInput) *artifactstoregcp.ArtifactStoreGcpStackOutputs {
+func Get(stackOutput map[string]interface{}, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs {
 	if input.StackJob.Spec.OperationType != operationtype.StackJobOperationType_apply || stackOutput == nil {
-		return &artifactstoregcp.ArtifactStoreGcpStackOutputs{}
+		return &code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs{}
 	}
 	artifactStoreId := input.ResourceInput.ArtifactStore.Metadata.Id
 	dockerRepoName := docker.GetRepoName(artifactStoreId)
 	mavenRepoName := maven.GetRepoName(artifactStoreId)
 	npmRepoName := npm.GetRepoName(artifactStoreId)
 	pythonRepoName := python.GetRepoName(artifactStoreId)
-	return &artifactstoregcp.ArtifactStoreGcpStackOutputs{
-		GcpArtifactRegistryStatus: &artifactstorestate.ArtifactStoreGcpArtifactRegistryStatus{
+	return &code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs{
+		GcpArtifactRegistryStatus: &code2cloudv1developafsmodel.ArtifactStoreGcpArtifactRegistryStatus{
 			ReaderServiceAccountEmail:     backend.GetVal(stackOutput, serviceaccount.GetReaderServiceAccountEmailOutputName(artifactStoreId)),
 			ReaderServiceAccountKeyBase64: backend.GetVal(stackOutput, serviceaccount.GetReaderServiceAccountKeyOutputName(artifactStoreId)),
 			WriterServiceAccountEmail:     backend.GetVal(stackOutput, serviceaccount.GetWriterServiceAccountEmailOutputName(artifactStoreId)),
