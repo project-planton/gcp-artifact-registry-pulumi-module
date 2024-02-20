@@ -2,8 +2,7 @@ package gcp
 
 import (
 	"context"
-
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/stack/job/enums/operationtype"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/iac/v1/stackjob/enums/stackjoboperationtype"
 
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/docker"
@@ -13,8 +12,8 @@ import (
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/org"
 	"github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
-	code2cloudv1developafsmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/model"
-	code2cloudv1developafsstackgcpmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/stack/gcp/model"
+	code2cloudv1developafsmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/model"
+	code2cloudv1developafsstackgcpmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/stack/gcp/model"
 )
 
 func Outputs(ctx context.Context, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) (*code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs, error) {
@@ -30,7 +29,7 @@ func Outputs(ctx context.Context, input *code2cloudv1developafsstackgcpmodel.Art
 }
 
 func Get(stackOutput map[string]interface{}, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs {
-	if input.StackJob.Spec.OperationType != operationtype.StackJobOperationType_apply || stackOutput == nil {
+	if input.StackJob.Spec.OperationType != stackjoboperationtype.StackJobOperationType_apply || stackOutput == nil {
 		return &code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs{}
 	}
 	artifactStoreId := input.ResourceInput.ArtifactStore.Metadata.Id

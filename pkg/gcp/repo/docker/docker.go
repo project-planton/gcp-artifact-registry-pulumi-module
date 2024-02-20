@@ -2,14 +2,14 @@ package docker
 
 import (
 	"fmt"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/enums/gcpartifactregistryrepotype"
 
 	"github.com/pkg/errors"
 	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam"
 	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
 	puluminameoutputgcp "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/code2cloud/develop/artifactstore/provider/gcpartifactregistry/enums/repotype"
-	wordpb "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/commons/english/enums"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -47,7 +47,7 @@ func addRepo(ctx *pulumi.Context, input *Input) (*artifactregistry.Repository, e
 			Project:      pulumi.String(input.GcpProjectId),
 			Location:     pulumi.String(input.GcpRegion),
 			RepositoryId: pulumi.String(repoName),
-			Format:       pulumi.String(repotype.GcpArtifactRegistryRepoType_DOCKER.String()),
+			Format:       pulumi.String(gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String()),
 			Labels:       pulumi.ToStringMap(input.Labels),
 		}, pulumi.Provider(input.GcpProvider))
 	if err != nil {
@@ -108,17 +108,17 @@ func addRepo(ctx *pulumi.Context, input *Input) (*artifactregistry.Repository, e
 
 func GetDockerRepoHostnameOutputName(repoName string) string {
 	return puluminameoutputgcp.Name(artifactregistry.Repository{}, repoName,
-		repotype.GcpArtifactRegistryRepoType_DOCKER.String(), wordpb.Word_hostname.String())
+		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_hostname.String())
 }
 
 func GetDockerRepoNameOutputName(repoName string) string {
 	return puluminameoutputgcp.Name(artifactregistry.Repository{}, repoName,
-		repotype.GcpArtifactRegistryRepoType_DOCKER.String(), wordpb.Word_name.String())
+		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_name.String())
 }
 
 func GetDockerRepoUrlOutputName(repoName string) string {
 	return puluminameoutputgcp.Name(artifactregistry.Repository{}, repoName,
-		repotype.GcpArtifactRegistryRepoType_DOCKER.String(), wordpb.Word_url.String())
+		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_url.String())
 }
 
 func exportOutputs(ctx *pulumi.Context, repoName string, addedRepo *artifactregistry.Repository) {

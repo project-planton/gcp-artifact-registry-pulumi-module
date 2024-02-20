@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	commonsgcpiamsa "github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/serviceaccount"
 	puluminameoutputgcp "github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
-	wordpb "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/v1/commons/english/enums"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -76,19 +76,19 @@ func getWriterServiceAccountName(artifactStoreId string) string {
 }
 
 func GetReaderServiceAccountEmailOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Account{}, getReaderServiceAccountName(artifactStoreId), wordpb.Word_email.String())
+	return puluminameoutputgcp.Name(serviceaccount.Account{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
 }
 
 func GetReaderServiceAccountKeyOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Key{}, getReaderServiceAccountName(artifactStoreId), wordpb.Word_key.String())
+	return puluminameoutputgcp.Name(serviceaccount.Key{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
 }
 
 func GetWriterServiceAccountEmailOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Account{}, getWriterServiceAccountName(artifactStoreId), wordpb.Word_email.String())
+	return puluminameoutputgcp.Name(serviceaccount.Account{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
 }
 
 func GetWriterServiceAccountKeyOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Key{}, getWriterServiceAccountName(artifactStoreId), wordpb.Word_key.String())
+	return puluminameoutputgcp.Name(serviceaccount.Key{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
 }
 
 func exportOutputs(ctx *pulumi.Context, artifactStoreId string, readerServiceAccount,
