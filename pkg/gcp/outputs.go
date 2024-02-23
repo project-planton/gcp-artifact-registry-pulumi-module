@@ -25,10 +25,10 @@ func Outputs(ctx context.Context, input *code2cloudv1developafsstackgcpmodel.Art
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get stack output")
 	}
-	return Get(stackOutput, input), nil
+	return OutputMapTransformer(stackOutput, input), nil
 }
 
-func Get(stackOutput map[string]interface{}, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs {
+func OutputMapTransformer(stackOutput map[string]interface{}, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs {
 	if input.StackJob.Spec.OperationType != stackjoboperationtype.StackJobOperationType_apply || stackOutput == nil {
 		return &code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs{}
 	}
