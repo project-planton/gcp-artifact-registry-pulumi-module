@@ -2,11 +2,11 @@ package repo
 
 import (
 	"github.com/pkg/errors"
-	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/docker"
-	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/maven"
-	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/npm"
-	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/repo/python"
-	"github.com/plantoncloud-inc/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
+	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/repo/docker"
+	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/repo/maven"
+	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/repo/npm"
+	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/repo/python"
+	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )

@@ -1,16 +1,16 @@
-module github.com/plantoncloud-inc/artifact-store-pulumi-blueprint
+module github.com/plantoncloud/artifact-store-pulumi-blueprint
 
 go 1.21
 
 //replace github.com/plantoncloud/planton-cloud-apis => /Users/swarup/scm/github.com/plantoncloud/planton-cloud-apis
 
-//replace github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk => /Users/swarup/scm/github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk
+//replace github.com/plantoncloud/pulumi-stack-runner-go-sdk => /Users/swarup/scm/github.com/plantoncloud/pulumi-stack-runner-go-sdk
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.427
-	github.com/plantoncloud-inc/pulumi-stack-runner-go-sdk v0.0.34
-	github.com/plantoncloud/planton-cloud-apis v0.0.101
+	github.com/plantoncloud-inc/go-commons v0.0.429
+	github.com/plantoncloud/planton-cloud-apis v0.0.107
+	github.com/plantoncloud/pulumi-stack-runner-go-sdk v0.0.40
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.2.1
 	github.com/pulumi/pulumi/sdk/v3 v3.104.2
 )
