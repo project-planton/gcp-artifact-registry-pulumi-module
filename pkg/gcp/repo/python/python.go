@@ -2,6 +2,7 @@ package python
 
 import (
 	"fmt"
+	"github.com/plantoncloud/pulumi-blueprint-golang-commons/pkg/google/pulumigoogleprovider"
 
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/enums/gcpartifactregistryrepotype"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
 	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
-	puluminameoutputgcp "github.com/plantoncloud/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -83,7 +83,7 @@ func Resources(ctx *pulumi.Context, input *Input) error {
 }
 
 func GetPythonRepoNameOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(artifactregistry.Repository{}, artifactStoreId,
+	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, artifactStoreId,
 		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_PYTHON.String(), englishword.EnglishWord_name.String())
 }
 

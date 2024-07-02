@@ -2,11 +2,11 @@ package serviceaccount
 
 import (
 	"fmt"
+	"github.com/plantoncloud/pulumi-blueprint-golang-commons/pkg/google/pulumigoogleprovider"
 
 	"github.com/pkg/errors"
 	commonsgcpiamsa "github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/serviceaccount"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
-	puluminameoutputgcp "github.com/plantoncloud/pulumi-stack-runner-go-sdk/pkg/name/provider/cloud/gcp/output"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -76,19 +76,19 @@ func getWriterServiceAccountName(artifactStoreId string) string {
 }
 
 func GetReaderServiceAccountEmailOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Account{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
+	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Account{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
 }
 
 func GetReaderServiceAccountKeyOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Key{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
+	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Key{}, getReaderServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
 }
 
 func GetWriterServiceAccountEmailOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Account{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
+	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Account{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_email.String())
 }
 
 func GetWriterServiceAccountKeyOutputName(artifactStoreId string) string {
-	return puluminameoutputgcp.Name(serviceaccount.Key{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
+	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Key{}, getWriterServiceAccountName(artifactStoreId), englishword.EnglishWord_key.String())
 }
 
 func exportOutputs(ctx *pulumi.Context, artifactStoreId string, readerServiceAccount,
