@@ -10,7 +10,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/plantoncloud-inc/go-commons v0.0.431
 	github.com/plantoncloud/planton-cloud-apis v0.0.204
-	github.com/plantoncloud/pulumi-blueprint-golang-commons v0.0.0-20240702142440-987e58645367
+	github.com/plantoncloud/pulumi-blueprint-golang-commons v0.0.0-20240702151641-1f0f663273d0
 	github.com/plantoncloud/pulumi-stack-runner-go-sdk v0.0.47
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.29.0
 	github.com/pulumi/pulumi/sdk/v3 v3.122.0
