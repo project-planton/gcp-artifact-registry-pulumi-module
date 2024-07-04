@@ -13,16 +13,11 @@ import (
 	"github.com/plantoncloud/artifact-store-pulumi-blueprint/pkg/gcp/serviceaccount"
 	code2cloudv1developafsmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/model"
 	code2cloudv1developafsstackgcpmodel "github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/artifactstore/stack/gcp/model"
-	"github.com/plantoncloud/pulumi-stack-runner-go-sdk/pkg/org"
-	"github.com/plantoncloud/pulumi-stack-runner-go-sdk/pkg/stack/output/backend"
+	"github.com/plantoncloud/stack-job-runner-golang-sdk/pkg/stack/output/backend"
 )
 
 func Outputs(ctx context.Context, input *code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackInput) (*code2cloudv1developafsstackgcpmodel.ArtifactStoreGcpStackOutputs, error) {
-	pulumiOrgName, err := org.GetOrgName()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get pulumi org name")
-	}
-	stackOutput, err := backend.StackOutput(pulumiOrgName, input.StackJob)
+	stackOutput, err := backend.StackOutput(input.StackJob)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get stack output")
 	}
