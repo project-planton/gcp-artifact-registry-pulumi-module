@@ -1,4 +1,4 @@
-package gcpartifactregistry
+package pkg
 
 import (
 	"fmt"

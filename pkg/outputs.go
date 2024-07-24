@@ -1,4 +1,4 @@
-package gcpartifactregistry
+package pkg
 
 import (
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/model"
