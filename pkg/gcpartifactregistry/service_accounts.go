@@ -4,94 +4,85 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	commonsgcpiamsa "github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/serviceaccount"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/model"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
-	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/gcp/pulumigoogleprovider"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-const (
-	readOnlyServiceAccountNameSuffix  = "ro"
-	readWriteServiceAccountNameSuffix = "rw"
-)
+func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider) (createdReaderServiceAccount,
+	createdWriterServiceAccount *serviceaccount.Account, err error) {
+	//create a variable with descriptive name for api-resource in the input
+	gcpArtifactRegistry := s.Input.ApiResource
 
-func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider) (addedReaderServiceAccount,
-	WriterServiceAccount *serviceaccount.Account, err error) {
-	readerServiceAccountFullName := getReaderServiceAccountName(s.getGcpArtifactRegistryId())
+	//create a name for the google service account to be used for "read"
+	//operations on the artifact-registry repositories.
+	readerServiceAccountName := fmt.Sprintf("%s-ro", gcpArtifactRegistry.Metadata.Id)
 
-	addedReaderServiceAccount, addedReaderServiceAccountKey, err := addServiceAccount(ctx, gcpProvider,
-		s.Input.ApiResource, readerServiceAccountFullName)
+	//create google service account to be used for "read"
+	//operations on the artifact-registry repositories.
+	createdReaderServiceAccount, err = serviceaccount.NewAccount(ctx,
+		readerServiceAccountName,
+		&serviceaccount.AccountArgs{
+			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+			AccountId:   pulumi.String(readerServiceAccountName),
+			DisplayName: pulumi.String(readerServiceAccountName),
+		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed to add %s svc acct",
-			readerServiceAccountFullName)
+		return nil, nil,
+			errors.Wrap(err, "failed create new reader service account")
 	}
 
-	writerServiceAccountFullName := getWriterServiceAccountName(s.getGcpArtifactRegistryId())
-	addedWriterServiceAccount, addedWriterServiceAccountKey, err := addServiceAccount(ctx, gcpProvider,
-		s.Input.ApiResource, writerServiceAccountFullName)
+	//create a json credentials key for the google service account to be used for "read"
+	//operations on the artifact-registry repositories.
+	createdReaderServiceAccountKey, err := serviceaccount.NewKey(ctx,
+		readerServiceAccountName,
+		&serviceaccount.KeyArgs{
+			ServiceAccountId: createdReaderServiceAccount.Name,
+			PublicKeyType:    pulumi.String(commonsgcpiamsa.KeyTypeX509PemFile),
+		}, pulumi.Parent(createdReaderServiceAccount))
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed to add %s svc acct",
-			writerServiceAccountFullName)
+		return nil, nil, errors.Wrap(err,
+			"failed to create json key for reader service account")
 	}
 
-	ctx.Export(GetReaderServiceAccountEmailOutputName(s.getGcpArtifactRegistryId()), addedReaderServiceAccount.Email)
-	ctx.Export(GetReaderServiceAccountKeyOutputName(s.getGcpArtifactRegistryId()), addedReaderServiceAccountKey.PrivateKey)
-	ctx.Export(GetWriterServiceAccountEmailOutputName(s.getGcpArtifactRegistryId()), addedWriterServiceAccount.Email)
-	ctx.Export(GetWriterServiceAccountKeyOutputName(s.getGcpArtifactRegistryId()), addedWriterServiceAccountKey.PrivateKey)
+	//export outputs for email and private key as outputs for the "reader" service account
+	ctx.Export(ReaderServiceAccountEmailOutputName, createdReaderServiceAccount.Email)
+	ctx.Export(ReaderServiceAccountKeyOutputName, createdReaderServiceAccountKey.PrivateKey)
 
-	return addedReaderServiceAccount, addedWriterServiceAccount, nil
-}
+	//create a name for the google service account to be used for "write"
+	//operations on the artifact-registry repositories.
+	writerServiceAccountName := fmt.Sprintf("%s-rw", gcpArtifactRegistry.Metadata.Id)
 
-func addServiceAccount(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
-	gcpArtifactRegistry *model.GcpArtifactRegistry, serviceAccountName string) (*serviceaccount.Account,
-	*serviceaccount.Key, error) {
-	addedServiceAccount, err := serviceaccount.NewAccount(ctx, serviceAccountName, &serviceaccount.AccountArgs{
-		Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-		AccountId:   pulumi.String(serviceAccountName),
-		DisplayName: pulumi.String(serviceAccountName),
-	}, pulumi.Provider(gcpProvider))
+	//create google service account to be used for "write"
+	//operations on the artifact-registry repositories.
+	createdWriterServiceAccount, err = serviceaccount.NewAccount(ctx,
+		writerServiceAccountName,
+		&serviceaccount.AccountArgs{
+			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+			AccountId:   pulumi.String(writerServiceAccountName),
+			DisplayName: pulumi.String(writerServiceAccountName),
+		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed add new %s svc acct", serviceAccountName)
+		return nil, nil,
+			errors.Wrap(err, "failed create new writer service account")
 	}
 
-	addedServiceAccountKey, err := serviceaccount.NewKey(ctx, serviceAccountName, &serviceaccount.KeyArgs{
-		ServiceAccountId: addedServiceAccount.Name,
-		PublicKeyType:    pulumi.String(commonsgcpiamsa.KeyTypeX509PemFile),
-	}, pulumi.Parent(addedServiceAccount))
+	//create a json credentials key for the google service account to be used for "write"
+	//operations on the artifact-registry repositories.
+	createdWriterServiceAccountKey, err := serviceaccount.NewKey(ctx,
+		writerServiceAccountName,
+		&serviceaccount.KeyArgs{
+			ServiceAccountId: createdWriterServiceAccount.Name,
+			PublicKeyType:    pulumi.String(commonsgcpiamsa.KeyTypeX509PemFile),
+		}, pulumi.Parent(createdWriterServiceAccount))
 	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed to create key for %s svc acct",
-			serviceAccountName)
+		return nil, nil, errors.Wrap(err,
+			"failed to create json key for writer service account")
 	}
 
-	return addedServiceAccount, addedServiceAccountKey, nil
-}
+	//export outputs for email and private key as outputs for the "writer" service account
+	ctx.Export(WriterServiceAccountEmailOutputName, createdWriterServiceAccount.Email)
+	ctx.Export(WriterServiceAccountKeyOutputName, createdWriterServiceAccountKey.PrivateKey)
 
-func getReaderServiceAccountName(gcpArtifactRegistryId string) string {
-	return fmt.Sprintf("%s-%s", gcpArtifactRegistryId, readOnlyServiceAccountNameSuffix)
-}
-
-func getWriterServiceAccountName(gcpArtifactRegistryId string) string {
-	return fmt.Sprintf("%s-%s", gcpArtifactRegistryId, readWriteServiceAccountNameSuffix)
-}
-
-func GetReaderServiceAccountEmailOutputName(gcpArtifactRegistryId string) string {
-	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Account{},
-		getReaderServiceAccountName(gcpArtifactRegistryId), englishword.EnglishWord_email.String())
-}
-
-func GetReaderServiceAccountKeyOutputName(gcpArtifactRegistryId string) string {
-	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Key{},
-		getReaderServiceAccountName(gcpArtifactRegistryId), englishword.EnglishWord_key.String())
-}
-
-func GetWriterServiceAccountEmailOutputName(gcpArtifactRegistryId string) string {
-	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Account{},
-		getWriterServiceAccountName(gcpArtifactRegistryId), englishword.EnglishWord_email.String())
-}
-
-func GetWriterServiceAccountKeyOutputName(gcpArtifactRegistryId string) string {
-	return pulumigoogleprovider.PulumiOutputName(serviceaccount.Key{},
-		getWriterServiceAccountName(gcpArtifactRegistryId), englishword.EnglishWord_key.String())
+	return createdReaderServiceAccount, createdWriterServiceAccount, nil
 }

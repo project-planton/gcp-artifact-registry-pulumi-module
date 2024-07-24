@@ -3,85 +3,80 @@ package gcpartifactregistry
 import (
 	"fmt"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
-	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/gcp/pulumigoogleprovider"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 
 	"github.com/pkg/errors"
-	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// npmRepo creates npm repository and also grants reader role to the reader service account and writer, admin roles to
+// writer service account.
 func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
-
+	//create a variable with descriptive name for the api-resource in the input
 	gcpArtifactRegistry := s.Input.ApiResource
 
-	repoName := GetNpmRepoName(gcpArtifactRegistry.Metadata.Id)
+	//create a name for the npm repo since the name of this repository should be unique with in the gcp project.
+	npmRepoName := fmt.Sprintf("%s-npm", gcpArtifactRegistry.Metadata.Id)
 
-	addedNpmRepo, err := artifactregistry.NewRepository(ctx, repoName,
+	//create npm repository
+	createdNpmRepo, err := artifactregistry.NewRepository(ctx,
+		npmRepoName,
 		&artifactregistry.RepositoryArgs{
 			Project:      pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
-			RepositoryId: pulumi.String(repoName),
+			RepositoryId: pulumi.String(npmRepoName),
 			Format:       pulumi.String(gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_NPM.String()),
 			Labels:       pulumi.ToStringMap(s.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to create %s repo", repoName)
+		return errors.Wrap(err, "failed to create npm repo")
 	}
 
-	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-reader",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
-		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedNpmRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_reader),
-		Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
-	}, pulumi.Provider(gcpProvider))
+	//grant "reader" role for the writer service account on the repo
+	_, err = artifactregistry.NewRepositoryIamMember(ctx,
+		fmt.Sprintf("%s-reader", npmRepoName),
+		&artifactregistry.RepositoryIamMemberArgs{
+			Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+			Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
+			Repository: createdNpmRepo.RepositoryId,
+			Role:       pulumi.String("roles/artifactregistry.reader"),
+			Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
+		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role to svc acct on %s repo",
-			standard.Artifactregistry_reader, repoName)
+		return errors.Wrap(err, "failed to grant reader role on npm repo for reader service account")
 	}
 
+	//grant "writer" role for the writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-writer",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		npmRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedNpmRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_writer),
+		Repository: createdNpmRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.writer"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_writer, repoName)
+		return errors.Wrap(err, "failed to grant writer role on npm repo for writer service account")
 	}
 
+	//grant "admin" role for writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-admin",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		npmRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedNpmRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_repoAdmin),
+		Repository: createdNpmRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.repoAdmin"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_repoAdmin, repoName)
+		return errors.Wrap(err, "failed to grant admin role on npm repo for writer service account")
 	}
 
-	ctx.Export(GetNpmRepoNameOutputName(repoName), addedNpmRepo.RepositoryId)
+	//export the name of the npm repository as output
+	ctx.Export(NpmRepoNameOutputName, createdNpmRepo.RepositoryId)
 
 	return nil
-}
-
-func GetNpmRepoNameOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_NPM.String(), englishword.EnglishWord_name.String())
-}
-
-func GetNpmRepoName(gcpArtifactRegistryId string) string {
-	return fmt.Sprintf("%s-npm", gcpArtifactRegistryId)
 }

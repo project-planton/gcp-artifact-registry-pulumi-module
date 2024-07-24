@@ -2,125 +2,107 @@ package gcpartifactregistry
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam"
-	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
-	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/gcp/pulumigoogleprovider"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
-	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
+
+	"github.com/pkg/errors"
+	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-const (
-	DockerHostnameSuffix = "docker.pkg.dev"
-)
-
+// dockerRepo creates docker repository and also grants reader role to the reader service account and writer, admin roles to
+// writer service account.
 func (s *ResourceStack) dockerRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
-
+	//create a variable with descriptive name for the api-resource in the input
 	gcpArtifactRegistry := s.Input.ApiResource
 
-	repoName := GetNpmRepoName(gcpArtifactRegistry.Metadata.Id)
+	//create a name for the docker repo since the name of this repository should be unique with in the gcp project.
+	dockerRepoName := fmt.Sprintf("%s-docker", gcpArtifactRegistry.Metadata.Id)
 
-	addedDockerRepo, err := artifactregistry.NewRepository(ctx, repoName,
+	//create docker repository
+	createdDockerRepo, err := artifactregistry.NewRepository(ctx,
+		dockerRepoName,
 		&artifactregistry.RepositoryArgs{
 			Project:      pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
-			RepositoryId: pulumi.String(repoName),
+			RepositoryId: pulumi.String(dockerRepoName),
 			Format:       pulumi.String(gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String()),
 			Labels:       pulumi.ToStringMap(s.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to create %s repo", repoName)
+		return errors.Wrap(err, "failed to create docker repo")
 	}
 
 	if gcpArtifactRegistry.Spec.IsExternal {
-		_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-reader-%s",
-			repoName, iam.AllUsersIdentifier), &artifactregistry.RepositoryIamMemberArgs{
-			Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-			Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-			Repository: addedDockerRepo.RepositoryId,
-			Role:       pulumi.String(standard.Artifactregistry_reader),
-			Member:     pulumi.Sprintf(iam.AllUsersIdentifier),
-		}, pulumi.Provider(gcpProvider))
+		//grant "reader" role for all users on the repo to make it public
+		_, err = artifactregistry.NewRepositoryIamMember(ctx,
+			fmt.Sprintf("%s-reader-for-all-users", dockerRepoName),
+			&artifactregistry.RepositoryIamMemberArgs{
+				Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+				Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
+				Repository: createdDockerRepo.RepositoryId,
+				Role:       pulumi.String("roles/artifactregistry.reader"),
+				//"allUsers" is a special identifier on google identity system which is used
+				//for granting permissions to for everyone.
+				Member: pulumi.Sprintf("allUsers"),
+			}, pulumi.Provider(gcpProvider))
 		if err != nil {
-			return errors.Wrapf(err, "failed to add %s role to %s",
-				standard.Artifactregistry_reader, iam.AllUsersIdentifier)
+			return errors.Wrap(err, "failed to grant reader role on docker repo for reader service account")
+		}
+	} else {
+		//grant "reader" role for the writer service account on the repo
+		_, err = artifactregistry.NewRepositoryIamMember(ctx,
+			fmt.Sprintf("%s-reader", dockerRepoName),
+			&artifactregistry.RepositoryIamMemberArgs{
+				Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+				Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
+				Repository: createdDockerRepo.RepositoryId,
+				Role:       pulumi.String("roles/artifactregistry.reader"),
+				Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
+			}, pulumi.Provider(gcpProvider))
+		if err != nil {
+			return errors.Wrap(err, "failed to grant reader role on docker repo for reader service account")
 		}
 	}
 
-	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-reader",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
-		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedDockerRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_reader),
-		Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
-	}, pulumi.Provider(gcpProvider))
-	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role to svc acct on %s repo",
-			standard.Artifactregistry_reader, repoName)
-	}
-
+	//grant "writer" role for the writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-writer",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		dockerRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedDockerRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_writer),
+		Repository: createdDockerRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.writer"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_writer, repoName)
+		return errors.Wrap(err, "failed to grant writer role on docker repo for writer service account")
 	}
 
+	//grant "admin" role for writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-admin",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		dockerRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedDockerRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_repoAdmin),
+		Repository: createdDockerRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.repoAdmin"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_repoAdmin, repoName)
+		return errors.Wrap(err, "failed to grant admin role on docker repo for writer service account")
 	}
 
-	ctx.Export(GetDockerRepoHostnameOutputName(repoName),
-		pulumi.Sprintf("%s-%s", addedDockerRepo.Location, DockerHostnameSuffix))
-	ctx.Export(GetDockerRepoNameOutputName(repoName), addedDockerRepo.RepositoryId)
-	ctx.Export(GetDockerRepoUrlOutputName(repoName), getDockerRepoUrl(addedDockerRepo))
+	//export important attributes of the docker repository as outputs
+	ctx.Export(DockerRepoNameOutputName, createdDockerRepo.RepositoryId)
+	//export docker-repo hostname
+	ctx.Export(DockerRepoHostnameOutputName, pulumi.Sprintf(
+		"%s-docker.pkg.dev", createdDockerRepo.Location))
+	//export complete docker repo url based on the attributes of the created docker-repo
+	// ex: artifactregistry://us-central1-docker.pkg.dev/my-gcp-project-id/my-company-docker-repo
+	ctx.Export(DockerRepoUrlOutputName, pulumi.Sprintf(
+		"%s-docker.pkg.dev/%s/%s",
+		createdDockerRepo.Location, createdDockerRepo.Project, createdDockerRepo.Name))
 
 	return nil
-}
-
-func GetDockerRepoHostnameOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_hostname.String())
-}
-
-func GetDockerRepoNameOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_name.String())
-}
-
-func GetDockerRepoUrlOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_DOCKER.String(), englishword.EnglishWord_url.String())
-}
-
-// getDockerRepoUrl constructs complete maven repo url using the provided input
-// ex: artifactregistry://us-central1-maven.pkg.dev/planton-shared-services-jx/planton-pcs-maven-repo"
-func getDockerRepoUrl(addedDockerRepo *artifactregistry.Repository) pulumi.Input {
-	return pulumi.Sprintf("%s-%s/%s/%s", addedDockerRepo.Location,
-		DockerHostnameSuffix, addedDockerRepo.Project, addedDockerRepo.Name)
-}
-
-func GetDockerRepoName(gcpArtifactRegistryId string) string {
-	return fmt.Sprintf("%s-docker", gcpArtifactRegistryId)
 }

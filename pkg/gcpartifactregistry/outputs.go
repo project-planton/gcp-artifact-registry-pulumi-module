@@ -2,46 +2,37 @@ package gcpartifactregistry
 
 import (
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/model"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/iac/v1/stackjob/enums/stackjoboperationtype"
 	"github.com/plantoncloud/stack-job-runner-golang-sdk/pkg/automationapi/autoapistackoutput"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
 )
 
-func OutputMapTransformer(stackOutput auto.OutputMap,
+const (
+	DockerRepoHostnameOutputName        = "docker-repo-hostname"
+	DockerRepoNameOutputName            = "docker-repo-name"
+	DockerRepoUrlOutputName             = "docker-repo-url"
+	MavenRepoNameOutputName             = "maven-repo-name"
+	MavenRepoUrlOutputName              = "maven-repo-url"
+	NpmRepoNameOutputName               = "npm-repo-name"
+	PythonRepoNameOutputName            = "python-repo-name"
+	ReaderServiceAccountEmailOutputName = "reader-service-account-email"
+	ReaderServiceAccountKeyOutputName   = "reader-service-account-key"
+	WriterServiceAccountEmailOutputName = "writer-service-account-email"
+	WriterServiceAccountKeyOutputName   = "writer-service-account-key"
+)
+
+func PulumiOutputsToStackOutputsConverter(pulumiOutputs auto.OutputMap,
 	input *model.GcpArtifactRegistryStackInput) *model.GcpArtifactRegistryStackOutputs {
-	if input.StackJob.Spec.OperationType != stackjoboperationtype.StackJobOperationType_apply ||
-		stackOutput == nil {
-		return &model.GcpArtifactRegistryStackOutputs{}
-	}
-
-	gcpArtifactRegistryId := input.ApiResource.Metadata.Id
-	dockerRepoName := GetDockerRepoName(gcpArtifactRegistryId)
-	mavenRepoName := GetMavenRepoName(gcpArtifactRegistryId)
-	npmRepoName := GetNpmRepoName(gcpArtifactRegistryId)
-	pythonRepoName := GetPythonRepoName(gcpArtifactRegistryId)
-
 	return &model.GcpArtifactRegistryStackOutputs{
-		ReaderServiceAccountEmail: autoapistackoutput.GetVal(stackOutput,
-			GetReaderServiceAccountEmailOutputName(gcpArtifactRegistryId)),
-		ReaderServiceAccountKeyBase64: autoapistackoutput.GetVal(stackOutput,
-			GetReaderServiceAccountKeyOutputName(gcpArtifactRegistryId)),
-		WriterServiceAccountEmail: autoapistackoutput.GetVal(stackOutput,
-			GetWriterServiceAccountEmailOutputName(gcpArtifactRegistryId)),
-		WriterServiceAccountKeyBase64: autoapistackoutput.GetVal(stackOutput,
-			GetWriterServiceAccountKeyOutputName(gcpArtifactRegistryId)),
-		DockerRepoName: autoapistackoutput.GetVal(stackOutput,
-			GetDockerRepoNameOutputName(dockerRepoName)),
-		DockerRepoHostname: autoapistackoutput.GetVal(stackOutput,
-			GetDockerRepoHostnameOutputName(dockerRepoName)),
-		DockerRepoUrl: autoapistackoutput.GetVal(stackOutput,
-			GetDockerRepoUrlOutputName(dockerRepoName)),
-		MavenRepoName: autoapistackoutput.GetVal(stackOutput,
-			GetMavenRepoNameOutputName(mavenRepoName)),
-		MavenRepoUrl: autoapistackoutput.GetVal(stackOutput,
-			GetMavenRepoUrlOutputName(mavenRepoName)),
-		NpmRepoName: autoapistackoutput.GetVal(stackOutput,
-			GetNpmRepoNameOutputName(npmRepoName)),
-		PythonRepoName: autoapistackoutput.GetVal(stackOutput,
-			GetPythonRepoNameOutputName(pythonRepoName)),
+		ReaderServiceAccountEmail:     autoapistackoutput.GetVal(pulumiOutputs, ReaderServiceAccountEmailOutputName),
+		ReaderServiceAccountKeyBase64: autoapistackoutput.GetVal(pulumiOutputs, ReaderServiceAccountKeyOutputName),
+		WriterServiceAccountEmail:     autoapistackoutput.GetVal(pulumiOutputs, WriterServiceAccountEmailOutputName),
+		WriterServiceAccountKeyBase64: autoapistackoutput.GetVal(pulumiOutputs, WriterServiceAccountKeyOutputName),
+		DockerRepoName:                autoapistackoutput.GetVal(pulumiOutputs, DockerRepoNameOutputName),
+		DockerRepoHostname:            autoapistackoutput.GetVal(pulumiOutputs, DockerRepoHostnameOutputName),
+		DockerRepoUrl:                 autoapistackoutput.GetVal(pulumiOutputs, DockerRepoUrlOutputName),
+		MavenRepoName:                 autoapistackoutput.GetVal(pulumiOutputs, MavenRepoNameOutputName),
+		MavenRepoUrl:                  autoapistackoutput.GetVal(pulumiOutputs, MavenRepoUrlOutputName),
+		NpmRepoName:                   autoapistackoutput.GetVal(pulumiOutputs, NpmRepoNameOutputName),
+		PythonRepoName:                autoapistackoutput.GetVal(pulumiOutputs, PythonRepoNameOutputName),
 	}
 }

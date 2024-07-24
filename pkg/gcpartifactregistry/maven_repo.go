@@ -2,108 +2,81 @@ package gcpartifactregistry
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/roles/standard"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/english/enums/englishword"
-	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/gcp/pulumigoogleprovider"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
-	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
+
+	"github.com/pkg/errors"
+	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/artifactregistry"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-const (
-	MavenHostnameSuffix = "maven.pkg.dev"
-)
-
+// mavenRepo creates maven repository and also grants reader role to the reader service account and writer, admin roles to
+// writer service account.
 func (s *ResourceStack) mavenRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
-
+	//create a variable with descriptive name for the api-resource in the input
 	gcpArtifactRegistry := s.Input.ApiResource
 
-	repoName := GetNpmRepoName(gcpArtifactRegistry.Metadata.Id)
+	//create a name for the maven repo since the name of this repository should be unique with in the gcp project.
+	mavenRepoName := fmt.Sprintf("%s-maven", gcpArtifactRegistry.Metadata.Id)
 
-	addedMavenRepo, err := artifactregistry.NewRepository(ctx, repoName,
+	//create maven repository
+	createdMavenRepo, err := artifactregistry.NewRepository(ctx,
+		mavenRepoName,
 		&artifactregistry.RepositoryArgs{
 			Project:      pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
-			RepositoryId: pulumi.String(repoName),
+			RepositoryId: pulumi.String(mavenRepoName),
 			Format:       pulumi.String(gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_MAVEN.String()),
 			Labels:       pulumi.ToStringMap(s.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to create %s repo", repoName)
+		return errors.Wrap(err, "failed to create maven repo")
 	}
 
-	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-reader", repoName),
+	//grant "reader" role for the writer service account on the repo
+	_, err = artifactregistry.NewRepositoryIamMember(ctx,
+		fmt.Sprintf("%s-reader", mavenRepoName),
 		&artifactregistry.RepositoryIamMemberArgs{
 			Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 			Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-			Repository: addedMavenRepo.RepositoryId,
-			Role:       pulumi.String(standard.Artifactregistry_reader),
+			Repository: createdMavenRepo.RepositoryId,
+			Role:       pulumi.String("roles/artifactregistry.reader"),
 			Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role to svc acct on %s repo",
-			standard.Artifactregistry_reader, gcpArtifactRegistry.Metadata.Id)
+		return errors.Wrap(err, "failed to grant reader role on maven repo for reader service account")
 	}
 
+	//grant "writer" role for the writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-writer",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		mavenRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedMavenRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_writer),
+		Repository: createdMavenRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.writer"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_writer, repoName)
+		return errors.Wrap(err, "failed to grant writer role on maven repo for writer service account")
 	}
 
+	//grant "admin" role for writer service account on the repo
 	_, err = artifactregistry.NewRepositoryIamMember(ctx, fmt.Sprintf("%s-admin",
-		repoName), &artifactregistry.RepositoryIamMemberArgs{
+		mavenRepoName), &artifactregistry.RepositoryIamMemberArgs{
 		Project:    pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
-		Repository: addedMavenRepo.RepositoryId,
-		Role:       pulumi.String(standard.Artifactregistry_repoAdmin),
+		Repository: createdMavenRepo.RepositoryId,
+		Role:       pulumi.String("roles/artifactregistry.repoAdmin"),
 		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
-		return errors.Wrapf(err, "failed to add %s role svc acct on %s repo",
-			standard.Artifactregistry_repoAdmin, repoName)
+		return errors.Wrap(err, "failed to grant admin role on maven repo for writer service account")
 	}
 
-	ctx.Export(GetMavenRepoNameOutputName(repoName), addedMavenRepo.RepositoryId)
-	ctx.Export(GetMavenRepoConfigOutputName(repoName), addedMavenRepo.MavenConfig.Elem())
-	ctx.Export(GetMavenRepoUrlOutputName(repoName), getMavenRepoUrl(addedMavenRepo))
+	//export the name of the maven repository as output
+	ctx.Export(MavenRepoNameOutputName, createdMavenRepo.RepositoryId)
 
 	return nil
-}
-
-func GetMavenRepoNameOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_MAVEN.String(), englishword.EnglishWord_name.String())
-}
-
-func GetMavenRepoConfigOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_MAVEN.String(), englishword.EnglishWord_config.String())
-}
-
-func GetMavenRepoUrlOutputName(repoName string) string {
-	return pulumigoogleprovider.PulumiOutputName(artifactregistry.Repository{}, repoName,
-		gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_MAVEN.String(), englishword.EnglishWord_url.String())
-}
-
-// getMavenRepoUrl constructs complete maven repo url using the provided input
-// ex: artifactregistry://us-central1-maven.pkg.dev/planton-shared-services-jx/planton-pcs-maven-repo"
-func getMavenRepoUrl(newRepository *artifactregistry.Repository) pulumi.Input {
-	return pulumi.Sprintf("artifactregistry://%s-%s/%s/%s", newRepository.Location,
-		MavenHostnameSuffix, newRepository.Project, newRepository.Name)
-}
-
-func GetMavenRepoName(gcpArtifactRegistryId string) string {
-	return fmt.Sprintf("%s-maven", gcpArtifactRegistryId)
 }
