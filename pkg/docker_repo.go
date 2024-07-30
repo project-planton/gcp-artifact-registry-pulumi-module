@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
@@ -94,13 +95,13 @@ func (s *ResourceStack) dockerRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.P
 	}
 
 	//export important attributes of the docker repository as outputs
-	ctx.Export(DockerRepoNameOutputName, createdDockerRepo.RepositoryId)
+	ctx.Export(outputs.DockerRepoName, createdDockerRepo.RepositoryId)
 	//export docker-repo hostname
-	ctx.Export(DockerRepoHostnameOutputName, pulumi.Sprintf(
+	ctx.Export(outputs.DockerRepoHostname, pulumi.Sprintf(
 		"%s-docker.pkg.dev", createdDockerRepo.Location))
 	//export complete docker repo url based on the attributes of the created docker-repo
 	// ex: artifactregistry://us-central1-docker.pkg.dev/my-gcp-project-id/my-company-docker-repo
-	ctx.Export(DockerRepoUrlOutputName, pulumi.Sprintf(
+	ctx.Export(outputs.DockerRepoUrl, pulumi.Sprintf(
 		"%s-docker.pkg.dev/%s/%s",
 		createdDockerRepo.Location, createdDockerRepo.Project, createdDockerRepo.Name))
 

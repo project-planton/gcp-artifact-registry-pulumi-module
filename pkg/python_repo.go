@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
@@ -76,7 +77,7 @@ func (s *ResourceStack) pythonRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.P
 	}
 
 	//export the name of the python repository as output
-	ctx.Export(PythonRepoNameOutputName, createdPythonRepo.RepositoryId)
+	ctx.Export(outputs.PythonRepoName, createdPythonRepo.RepositoryId)
 
 	return nil
 }
