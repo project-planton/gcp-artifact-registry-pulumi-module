@@ -4,20 +4,17 @@ go 1.22
 
 replace github.com/plantoncloud/planton-cloud-apis => ../../plantoncloud/planton-cloud-apis
 
-replace github.com/plantoncloud/stack-job-runner-golang-sdk => ../../plantoncloud/stack-job-runner-golang-sdk
+//replace github.com/plantoncloud/stack-job-runner-golang-sdk => ../../plantoncloud/stack-job-runner-golang-sdk
 
-replace github.com/plantoncloud-inc/go-commons => ../../plantoncloud-inc/go-commons
-
-replace github.com/plantoncloud/pulumi-module-golang-commons => ../../plantoncloud/pulumi-module-golang-commons
+//replace github.com/plantoncloud/pulumi-module-golang-commons => ../../plantoncloud/pulumi-module-golang-commons
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud-inc/go-commons v0.0.433
 	github.com/plantoncloud/planton-cloud-apis v0.0.211
-	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20240722171224-c185089f30b0
-	github.com/plantoncloud/stack-job-runner-golang-sdk v0.0.52
+	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20240801150944-e149dc5e0403
+	github.com/plantoncloud/stack-job-runner-golang-sdk v0.0.53
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.29.0
-	github.com/pulumi/pulumi/sdk/v3 v3.124.0
+	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 )
 
 require (
@@ -102,7 +99,7 @@ require (
 	golang.org/x/tools v0.22.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7 // indirect
 	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.34.1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

@@ -3,7 +3,6 @@ package pkg
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	commonsgcpiamsa "github.com/plantoncloud-inc/go-commons/cloud/gcp/iam/serviceaccount"
 	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
@@ -39,7 +38,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 		readerServiceAccountName,
 		&serviceaccount.KeyArgs{
 			ServiceAccountId: createdReaderServiceAccount.Name,
-			PublicKeyType:    pulumi.String(commonsgcpiamsa.KeyTypeX509PemFile),
+			PublicKeyType:    pulumi.String("TYPE_X509_PEM_FILE"),
 		}, pulumi.Parent(createdReaderServiceAccount))
 	if err != nil {
 		return nil, nil, errors.Wrap(err,
@@ -74,7 +73,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 		writerServiceAccountName,
 		&serviceaccount.KeyArgs{
 			ServiceAccountId: createdWriterServiceAccount.Name,
-			PublicKeyType:    pulumi.String(commonsgcpiamsa.KeyTypeX509PemFile),
+			PublicKeyType:    pulumi.String("TYPE_X509_PEM_FILE"),
 		}, pulumi.Parent(createdWriterServiceAccount))
 	if err != nil {
 		return nil, nil, errors.Wrap(err,
