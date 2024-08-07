@@ -10,10 +10,11 @@ replace github.com/plantoncloud/planton-cloud-apis => ../../plantoncloud/planton
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud/planton-cloud-apis v0.0.211
+	github.com/plantoncloud/planton-cloud-apis v0.0.214
 	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20240801150944-e149dc5e0403
-	github.com/plantoncloud/stack-job-runner-golang-sdk v0.0.53
+	github.com/plantoncloud/stack-job-runner-golang-sdk v0.0.54
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.29.0
+	github.com/pulumi/pulumi-random/sdk/v4 v4.16.3
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 )
 
@@ -80,7 +81,6 @@ require (
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/tweekmonster/luser v0.0.0-20161003172636-3fa38070dbd7 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect

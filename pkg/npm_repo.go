@@ -44,7 +44,7 @@ func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Prov
 			Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
 			Repository: createdNpmRepo.RepositoryId,
 			Role:       pulumi.String("roles/artifactregistry.reader"),
-			Member:     pulumi.Sprintf("serviceAccounts:%s", readerServiceAccount.Email),
+			Member:     pulumi.Sprintf("serviceAccount:%s", readerServiceAccount.Email),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to grant reader role on npm repo for reader service account")
@@ -57,7 +57,7 @@ func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Prov
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
 		Repository: createdNpmRepo.RepositoryId,
 		Role:       pulumi.String("roles/artifactregistry.writer"),
-		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
+		Member:     pulumi.Sprintf("serviceAccount:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to grant writer role on npm repo for writer service account")
@@ -70,7 +70,7 @@ func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Prov
 		Location:   pulumi.String(gcpArtifactRegistry.Spec.Region),
 		Repository: createdNpmRepo.RepositoryId,
 		Role:       pulumi.String("roles/artifactregistry.repoAdmin"),
-		Member:     pulumi.Sprintf("serviceAccounts:%s", writerServiceAccount.Email),
+		Member:     pulumi.Sprintf("serviceAccount:%s", writerServiceAccount.Email),
 	}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to grant admin role on npm repo for writer service account")

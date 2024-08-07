@@ -1,11 +1,11 @@
 package pkg
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
+	"github.com/pulumi/pulumi-random/sdk/v4/go/random"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -14,18 +14,32 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 	//create a variable with descriptive name for api-resource in the input
 	gcpArtifactRegistry := s.Input.ApiResource
 
+	createdServiceAccountSuffixRandomString, err := random.NewRandomString(ctx, "service-account-suffix",
+		&random.RandomStringArgs{
+			Special: pulumi.Bool(false),
+			Lower:   pulumi.Bool(true),
+			Upper:   pulumi.Bool(false),
+			Number:  pulumi.Bool(true),
+			Length:  pulumi.Int(6), //increasing this can result in violation of service account id length <30
+		})
+	if err != nil {
+		return nil, nil,
+			errors.Wrap(err, "failed to create random suffix for service account")
+	}
+
 	//create a name for the google service account to be used for "read"
 	//operations on the artifact-registry repositories.
-	readerServiceAccountName := fmt.Sprintf("%s-ro", gcpArtifactRegistry.Metadata.Id)
+	readerServiceAccountName := pulumi.Sprintf("%s-%s-ro", gcpArtifactRegistry.Metadata.Name,
+		createdServiceAccountSuffixRandomString.Result)
 
 	//create google service account to be used for "read"
 	//operations on the artifact-registry repositories.
 	createdReaderServiceAccount, err = serviceaccount.NewAccount(ctx,
-		readerServiceAccountName,
+		"reader-service-account",
 		&serviceaccount.AccountArgs{
 			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-			AccountId:   pulumi.String(readerServiceAccountName),
-			DisplayName: pulumi.String(readerServiceAccountName),
+			AccountId:   readerServiceAccountName,
+			DisplayName: readerServiceAccountName,
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return nil, nil,
@@ -35,7 +49,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 	//create a json credentials key for the google service account to be used for "read"
 	//operations on the artifact-registry repositories.
 	createdReaderServiceAccountKey, err := serviceaccount.NewKey(ctx,
-		readerServiceAccountName,
+		"reader-service-account",
 		&serviceaccount.KeyArgs{
 			ServiceAccountId: createdReaderServiceAccount.Name,
 			PublicKeyType:    pulumi.String("TYPE_X509_PEM_FILE"),
@@ -51,16 +65,17 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 
 	//create a name for the google service account to be used for "write"
 	//operations on the artifact-registry repositories.
-	writerServiceAccountName := fmt.Sprintf("%s-rw", gcpArtifactRegistry.Metadata.Id)
+	writerServiceAccountName := pulumi.Sprintf("%s-%s-rw", gcpArtifactRegistry.Metadata.Name,
+		createdServiceAccountSuffixRandomString.Result)
 
 	//create google service account to be used for "write"
 	//operations on the artifact-registry repositories.
 	createdWriterServiceAccount, err = serviceaccount.NewAccount(ctx,
-		writerServiceAccountName,
+		"writer-service-account",
 		&serviceaccount.AccountArgs{
 			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
-			AccountId:   pulumi.String(writerServiceAccountName),
-			DisplayName: pulumi.String(writerServiceAccountName),
+			AccountId:   writerServiceAccountName,
+			DisplayName: writerServiceAccountName,
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return nil, nil,
@@ -70,7 +85,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 	//create a json credentials key for the google service account to be used for "write"
 	//operations on the artifact-registry repositories.
 	createdWriterServiceAccountKey, err := serviceaccount.NewKey(ctx,
-		writerServiceAccountName,
+		"writer-service-account",
 		&serviceaccount.KeyArgs{
 			ServiceAccountId: createdWriterServiceAccount.Name,
 			PublicKeyType:    pulumi.String("TYPE_X509_PEM_FILE"),
