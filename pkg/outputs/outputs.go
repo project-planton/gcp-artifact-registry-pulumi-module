@@ -1,7 +1,7 @@
 package outputs
 
 import (
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/model"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry"
 	"github.com/plantoncloud/stack-job-runner-golang-sdk/pkg/automationapi/autoapistackoutput"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
 )
@@ -21,8 +21,8 @@ const (
 )
 
 func PulumiOutputsToStackOutputsConverter(pulumiOutputs auto.OutputMap,
-	input *model.GcpArtifactRegistryStackInput) *model.GcpArtifactRegistryStackOutputs {
-	return &model.GcpArtifactRegistryStackOutputs{
+	input *gcpartifactregistry.GcpArtifactRegistryStackInput) *gcpartifactregistry.GcpArtifactRegistryStackOutputs {
+	return &gcpartifactregistry.GcpArtifactRegistryStackOutputs{
 		ReaderServiceAccountEmail:     autoapistackoutput.GetVal(pulumiOutputs, ReaderServiceAccountEmail),
 		ReaderServiceAccountKeyBase64: autoapistackoutput.GetVal(pulumiOutputs, ReaderServiceAccountKey),
 		WriterServiceAccountEmail:     autoapistackoutput.GetVal(pulumiOutputs, WriterServiceAccountEmail),

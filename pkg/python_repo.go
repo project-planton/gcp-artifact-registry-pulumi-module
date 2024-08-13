@@ -3,7 +3,6 @@ package pkg
 import (
 	"fmt"
 	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry/enums/gcpartifactregistryrepotype"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 
@@ -29,7 +28,7 @@ func (s *ResourceStack) pythonRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.P
 			Project:      pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
 			RepositoryId: pulumi.String(pythonRepoName),
-			Format:       pulumi.String(gcpartifactregistryrepotype.GcpArtifactRegistryRepoType_PYTHON.String()),
+			Format:       pulumi.String("PYTHON"),
 			Labels:       pulumi.ToStringMap(s.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
