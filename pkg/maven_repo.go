@@ -13,10 +13,10 @@ import (
 
 // mavenRepo creates maven repository and also grants reader role to the reader service account and writer, admin roles to
 // writer service account.
-func (s *ResourceStack) mavenRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
+func mavenRepo(ctx *pulumi.Context, locals *Locals, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
 	//create a variable with descriptive name for the api-resource in the input
-	gcpArtifactRegistry := s.Input.ApiResource
+	gcpArtifactRegistry := locals.GcpArtifactRegistry
 
 	//create a name for the maven repo since the name of this repository should be unique with in the gcp project.
 	mavenRepoName := fmt.Sprintf("%s-maven", gcpArtifactRegistry.Metadata.Id)
@@ -29,7 +29,7 @@ func (s *ResourceStack) mavenRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Pr
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
 			RepositoryId: pulumi.String(mavenRepoName),
 			Format:       pulumi.String("MAVEN"),
-			Labels:       pulumi.ToStringMap(s.GcpLabels),
+			Labels:       pulumi.ToStringMap(locals.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to create maven repo")

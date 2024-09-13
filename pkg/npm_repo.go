@@ -13,10 +13,10 @@ import (
 
 // npmRepo creates npm repository and also grants reader role to the reader service account and writer, admin roles to
 // writer service account.
-func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
+func npmRepo(ctx *pulumi.Context, locals *Locals, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
 	//create a variable with descriptive name for the api-resource in the input
-	gcpArtifactRegistry := s.Input.ApiResource
+	gcpArtifactRegistry := locals.GcpArtifactRegistry
 
 	//create a name for the npm repo since the name of this repository should be unique with in the gcp project.
 	npmRepoName := fmt.Sprintf("%s-npm", gcpArtifactRegistry.Metadata.Id)
@@ -29,7 +29,7 @@ func (s *ResourceStack) npmRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Prov
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
 			RepositoryId: pulumi.String(npmRepoName),
 			Format:       pulumi.String("NPM"),
-			Labels:       pulumi.ToStringMap(s.GcpLabels),
+			Labels:       pulumi.ToStringMap(locals.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to create npm repo")

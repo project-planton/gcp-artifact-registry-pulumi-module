@@ -9,10 +9,8 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider) (createdReaderServiceAccount,
+func serviceAccounts(ctx *pulumi.Context, locals *Locals, gcpProvider *pulumigcp.Provider) (createdReaderServiceAccount,
 	createdWriterServiceAccount *serviceaccount.Account, err error) {
-	//create a variable with descriptive name for api-resource in the input
-	gcpArtifactRegistry := s.Input.ApiResource
 
 	createdServiceAccountSuffixRandomString, err := random.NewRandomString(ctx, "service-account-suffix",
 		&random.RandomStringArgs{
@@ -29,7 +27,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 
 	//create a name for the google service account to be used for "read"
 	//operations on the artifact-registry repositories.
-	readerServiceAccountName := pulumi.Sprintf("%s-%s-ro", gcpArtifactRegistry.Metadata.Name,
+	readerServiceAccountName := pulumi.Sprintf("%s-%s-ro", locals.GcpArtifactRegistry.Metadata.Name,
 		createdServiceAccountSuffixRandomString.Result)
 
 	//create google service account to be used for "read"
@@ -37,7 +35,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 	createdReaderServiceAccount, err = serviceaccount.NewAccount(ctx,
 		"reader-service-account",
 		&serviceaccount.AccountArgs{
-			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+			Project:     pulumi.String(locals.GcpArtifactRegistry.Spec.ProjectId),
 			AccountId:   readerServiceAccountName,
 			DisplayName: readerServiceAccountName,
 		}, pulumi.Provider(gcpProvider))
@@ -65,7 +63,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 
 	//create a name for the google service account to be used for "write"
 	//operations on the artifact-registry repositories.
-	writerServiceAccountName := pulumi.Sprintf("%s-%s-rw", gcpArtifactRegistry.Metadata.Name,
+	writerServiceAccountName := pulumi.Sprintf("%s-%s-rw", locals.GcpArtifactRegistry.Metadata.Name,
 		createdServiceAccountSuffixRandomString.Result)
 
 	//create google service account to be used for "write"
@@ -73,7 +71,7 @@ func (s *ResourceStack) serviceAccounts(ctx *pulumi.Context, gcpProvider *pulumi
 	createdWriterServiceAccount, err = serviceaccount.NewAccount(ctx,
 		"writer-service-account",
 		&serviceaccount.AccountArgs{
-			Project:     pulumi.String(gcpArtifactRegistry.Spec.ProjectId),
+			Project:     pulumi.String(locals.GcpArtifactRegistry.Spec.ProjectId),
 			AccountId:   writerServiceAccountName,
 			DisplayName: writerServiceAccountName,
 		}, pulumi.Provider(gcpProvider))

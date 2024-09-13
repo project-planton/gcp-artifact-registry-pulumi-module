@@ -7,41 +7,38 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-type ResourceStack struct {
-	Input     *gcpartifactregistry.GcpArtifactRegistryStackInput
-	GcpLabels map[string]string
-}
+func Resources(ctx *pulumi.Context, stackInput *gcpartifactregistry.GcpArtifactRegistryStackInput) error {
+	locals := initializeLocals(ctx, stackInput)
 
-func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
 	//create google provider using the credentials from the input
-	googleProvider, err := pulumigoogleprovider.Get(ctx, s.Input.GcpCredential)
+	googleProvider, err := pulumigoogleprovider.Get(ctx, stackInput.GcpCredential)
 	if err != nil {
 		return errors.Wrap(err, "failed to create google provider")
 	}
 
 	//create reader and writer service accounts and their keys
-	addedReaderServiceAccount, addedWriterServiceAccount, err := s.serviceAccounts(ctx, googleProvider)
+	addedReaderServiceAccount, addedWriterServiceAccount, err := serviceAccounts(ctx, locals, googleProvider)
 	if err != nil {
 		return errors.Wrap(err, "failed to create service accounts")
 	}
 
 	//create docker repository and grant reader and writer roles for the service accounts on the repo
-	if err := s.dockerRepo(ctx, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
+	if err := dockerRepo(ctx, locals, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
 		return errors.Wrap(err, "failed to create docker repo")
 	}
 
 	//create maven repository and grant reader and writer roles for the service accounts on the repo
-	if err := s.mavenRepo(ctx, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
+	if err := mavenRepo(ctx, locals, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
 		return errors.Wrap(err, "failed to create maven repo")
 	}
 
 	//create npm repository and grant reader and writer roles for the service accounts on the repo
-	if err := s.npmRepo(ctx, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
+	if err := npmRepo(ctx, locals, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
 		return errors.Wrap(err, "failed to create npm repo")
 	}
 
 	//create python repository and grant reader and writer roles for the service accounts on the repo
-	if err := s.pythonRepo(ctx, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
+	if err := pythonRepo(ctx, locals, googleProvider, addedReaderServiceAccount, addedWriterServiceAccount); err != nil {
 		return errors.Wrap(err, "failed to create python repo")
 	}
 

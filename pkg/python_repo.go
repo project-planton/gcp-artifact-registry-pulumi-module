@@ -13,10 +13,10 @@ import (
 
 // pythonRepo creates python repository and also grants reader role to the reader service account and writer, admin roles to
 // writer service account.
-func (s *ResourceStack) pythonRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.Provider,
+func pythonRepo(ctx *pulumi.Context, locals *Locals, gcpProvider *pulumigcp.Provider,
 	readerServiceAccount *serviceaccount.Account, writerServiceAccount *serviceaccount.Account) error {
 	//create a variable with descriptive name for the api-resource in the input
-	gcpArtifactRegistry := s.Input.ApiResource
+	gcpArtifactRegistry := locals.GcpArtifactRegistry
 
 	//create a name for the python repo since the name of this repository should be unique with in the gcp project.
 	pythonRepoName := fmt.Sprintf("%s-python", gcpArtifactRegistry.Metadata.Id)
@@ -29,7 +29,7 @@ func (s *ResourceStack) pythonRepo(ctx *pulumi.Context, gcpProvider *pulumigcp.P
 			Location:     pulumi.String(gcpArtifactRegistry.Spec.Region),
 			RepositoryId: pulumi.String(pythonRepoName),
 			Format:       pulumi.String("PYTHON"),
-			Labels:       pulumi.ToStringMap(s.GcpLabels),
+			Labels:       pulumi.ToStringMap(locals.GcpLabels),
 		}, pulumi.Provider(gcpProvider))
 	if err != nil {
 		return errors.Wrap(err, "failed to create python repo")
