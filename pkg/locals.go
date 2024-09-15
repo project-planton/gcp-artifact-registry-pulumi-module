@@ -17,7 +17,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *gcpartifactregistry.GcpAr
 	locals := &Locals{}
 
 	//assign value for the locals variable to make it available across the project
-	locals.GcpArtifactRegistry = stackInput.ApiResource
+	locals.GcpArtifactRegistry = stackInput.Target
 
 	locals.GcpLabels = map[string]string{
 		gcplabelkeys.Resource:     strconv.FormatBool(true),
