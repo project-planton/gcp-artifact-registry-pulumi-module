@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"github.com/pkg/errors"
-	gcpartifactregistry "github.com/plantoncloud/planton/apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry"
+	gcpartifactregistry "github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/gcp/pulumigoogleprovider"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
