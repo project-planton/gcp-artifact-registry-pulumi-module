@@ -1,13 +1,13 @@
 package pkg
 
 import (
+	gcpartifactregistryv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/apis/provider/gcp/gcpartifactregistry/v1"
 	"github.com/pkg/errors"
-	gcpartifactregistry "github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/gcp/pulumigoogleprovider"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func Resources(ctx *pulumi.Context, stackInput *gcpartifactregistry.GcpArtifactRegistryStackInput) error {
+func Resources(ctx *pulumi.Context, stackInput *gcpartifactregistryv1.GcpArtifactRegistryStackInput) error {
 	locals := initializeLocals(ctx, stackInput)
 
 	//create google provider using the credentials from the input

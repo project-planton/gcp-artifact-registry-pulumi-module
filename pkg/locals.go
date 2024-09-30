@@ -1,19 +1,18 @@
 package pkg
 
 import (
-	"github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/code2cloud/v1/gcp/gcpartifactregistry"
-	"github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/commons/apiresource/enums/apiresourcekind"
+	gcpartifactregistryv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/apis/provider/gcp/gcpartifactregistry/v1"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/gcp/gcplabelkeys"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"strconv"
 )
 
 type Locals struct {
-	GcpArtifactRegistry *gcpartifactregistry.GcpArtifactRegistry
+	GcpArtifactRegistry *gcpartifactregistryv1.GcpArtifactRegistry
 	GcpLabels           map[string]string
 }
 
-func initializeLocals(ctx *pulumi.Context, stackInput *gcpartifactregistry.GcpArtifactRegistryStackInput) *Locals {
+func initializeLocals(ctx *pulumi.Context, stackInput *gcpartifactregistryv1.GcpArtifactRegistryStackInput) *Locals {
 	locals := &Locals{}
 
 	//assign value for the locals variable to make it available across the project
@@ -22,7 +21,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *gcpartifactregistry.GcpAr
 	locals.GcpLabels = map[string]string{
 		gcplabelkeys.Resource:     strconv.FormatBool(true),
 		gcplabelkeys.Organization: locals.GcpArtifactRegistry.Spec.EnvironmentInfo.OrgId,
-		gcplabelkeys.ResourceKind: apiresourcekind.ApiResourceKind_gcp_artifact_registry.String(),
+		gcplabelkeys.ResourceKind: "gcp_artifact_registry",
 		gcplabelkeys.ResourceId:   locals.GcpArtifactRegistry.Metadata.Id,
 	}
 
