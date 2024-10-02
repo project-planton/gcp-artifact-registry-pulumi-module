@@ -1,7 +1,7 @@
 package main
 
 import (
-	gcpartifactregistryv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/apis/provider/gcp/gcpartifactregistry/v1"
+	gcpartifactregistryv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/provider/gcp/gcpartifactregistry/v1"
 	"github.com/pkg/errors"
 	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/stackinput"
