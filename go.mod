@@ -5,9 +5,9 @@ go 1.23.1
 //replace github.com/plantoncloud/pulumi-module-golang-commons => ../../plantoncloud/pulumi-module-golang-commons
 
 require (
-	buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go v1.34.2-20241001121943-29543e670f7b.2
+	buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go v1.34.2-20241003094048-890f92dd6eb4.2
 	github.com/pkg/errors v0.9.1
-	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20241003055957-d4e88d839dcb
+	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20241003135220-d540f3f192f8
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.29.0
 	github.com/pulumi/pulumi-random/sdk/v4 v4.16.3
 	github.com/pulumi/pulumi/sdk/v3 v3.129.0
