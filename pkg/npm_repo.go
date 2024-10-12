@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/plantoncloud/gcp-artifact-registry-pulumi-module/pkg/outputs"
+	"github.com/project-planton/gcp-artifact-registry-pulumi-module/pkg/outputs"
 	pulumigcp "github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp"
 	"github.com/pulumi/pulumi-gcp/sdk/v7/go/gcp/serviceaccount"
 
