@@ -29,8 +29,8 @@ func initializeLocals(ctx *pulumi.Context, stackInput *gcpartifactregistryv1.Gcp
 		gcplabelkeys.ResourceKind: "gcp_artifact_registry",
 	}
 
-	if locals.GcpArtifactRegistry.Spec.EnvironmentInfo != nil && locals.GcpArtifactRegistry.Spec.EnvironmentInfo.OrgId != "" {
-		locals.GcpLabels[gcplabelkeys.Organization] = locals.GcpArtifactRegistry.Spec.EnvironmentInfo.OrgId
+	if locals.GcpArtifactRegistry.Metadata.Org != "" {
+		locals.GcpLabels[gcplabelkeys.Organization] = locals.GcpArtifactRegistry.Metadata.Org
 	}
 
 	return locals
