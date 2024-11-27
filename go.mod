@@ -6,7 +6,7 @@ go 1.23.1
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/project-planton/project-planton v0.0.19
+	github.com/project-planton/project-planton v0.0.23
 	github.com/pulumi/pulumi-gcp/sdk/v7 v7.38.0
 	github.com/pulumi/pulumi-random/sdk/v4 v4.16.3
 	github.com/pulumi/pulumi/sdk/v3 v3.138.0
